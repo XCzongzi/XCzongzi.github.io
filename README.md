@@ -1,6 +1,7 @@
 # XCzongzi.net
 
 XCzongzi 的个人创作主页。纯 HTML、CSS、JavaScript 构建，不依赖构建工具，可直接部署到任意静态托管服务。
+此项目由AI生成、维护。
 
 ## 目录结构
 
