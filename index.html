@@ -1,31 +1,116 @@
-<style>
-html{overflow-x:hidden;overflow-y:auto;}
-body { padding:0px;margin: 0px; } 
-#lyrow, #lyrow input, #lyrow textarea { font-size:12px;font-family: 'Microsoft YaHei', '微软雅黑', MicrosoftJhengHei, '华文细黑', STHeiti, MingLiu; } 
-#lyrow { height:100vh;width: 100vw; } 
-#lyrow div { min-height: 18px;  } 
-#lyrow input, #lyrow textarea { border:rgb(235, 235, 235) 1px solid;border-radius: 3px;padding: 5px 8px;outline: 0; } 
-#lyrow input:hover, #lyrow textarea:hover { border: 1px solid #6bc1f2; } 
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="XCzongzi 的个人创作空间。因热爱，持续创造 Minecraft 内容、软件与独立游戏。" />
+    <meta name="theme-color" content="#171914" />
+    <title>XCzongzi · 因热爱而创造</title>
+    <link rel="icon" href="assets/images/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">跳到主要内容</a>
 
-#lyrow .wrap { padding:0 0 33px 0;text-indent:44px;font-size:41px;font-weight:700;position:static; } 
-#lyrow .xczongzi { justify-content:center;display:flex !important;font-size:8em;font-weight:bolder;position:relative;top:92px;color:rgba(61, 59, 79, 1);text-shadow:7px 5px 8px rgba(114, 94, 130, 1);background-color:rgba(128, 128, 128, 0.66);padding:0 0 12px 0; } 
-#lyrow .background { height:calc(100% - -700px);background-color:rgba(0, 0, 0, 1);width:100%; } 
-#lyrow .text { height:calc(100% - 700px);background-image:url(https://www.hualigs.cn/image/643c042a568fe.jpg);background-size:cover;width:100%; } 
-#lyrow .bq_one { justify-content:center;display:flex !important;position:relative;top:102px;color:rgba(66, 76, 80, 1);font-weight:bold;text-shadow:5px 5px 10px rgba(187, 205, 197, 1);font-size:40px; } 
-#lyrow .bq_two { justify-content:center;display:flex !important;color:rgba(0, 229, 0, 1);font-size:30px;position:relative;top:110px;text-shadow:3px 3px 2px rgba(66, 76, 80, 1);font-weight:bold; } 
-#lyrow .information { width:100%;background-color:rgba(80, 97, 109, 1);height:700px !important; } 
-#lyrow .bq_three { color:rgba(255, 255, 255, 1);font-size:35px;top:10px;left:10px;position:relative; } 
-#lyrow .bq_four { position:relative;top:39px;left:39px;color:rgba(255, 255, 255, 1);font-size:20px; } 
+    <header class="site-header" data-header>
+      <a class="brand" href="#home" aria-label="XCzongzi 首页">
+        <img src="assets/images/logo.png" alt="" />
+        <span>XCzongzi</span>
+      </a>
+      <button class="menu-button" type="button" aria-label="打开菜单" aria-expanded="false" data-menu-button>
+        <span></span><span></span>
+      </button>
+      <nav class="site-nav" aria-label="主导航" data-menu>
+        <a href="#about">关于</a>
+        <a href="#directions">创作</a>
+        <a href="#now">近况</a>
+        <a href="#journal">日志</a>
+        <a href="#channels">频道</a>
+      </nav>
+    </header>
 
-</style>
+    <main id="content">
+      <section class="hero" id="home" aria-labelledby="hero-title">
+        <div class="hero-media" aria-hidden="true"></div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-content page-width">
+          <p class="kicker">Independent creator · XCZONGZI.NET</p>
+          <h1 id="hero-title">因热爱，<br />创造<span>小世界。</span></h1>
+          <div class="hero-foot">
+            <p>关于方块、代码与想象。</p>
+            <a class="circle-link" href="#about" aria-label="继续浏览">↓</a>
+          </div>
+        </div>
+      </section>
 
-<div id="lyrow">
-<div class="background"> 
-<div class="text">
-    <h1 class="xczongzi">「粽之方块」<br></h1>
-    <span class="bq_one">欢迎访问我们的团队</span>
-    <span class="bq_two">创始人：小菜粽子</span> </div>
-<div class="information">
-    <h1 class="bq_three">更多信息</h1>
-    <span class="bq_four"> </span> </div></div>
-</div>
+      <section class="intro page-width section" id="about" aria-labelledby="about-title">
+        <p class="section-label">01 / ABOUT</p>
+        <div class="intro-layout">
+          <h2 id="about-title">你好，我是<br /><span>XCzongzi。</span></h2>
+          <div class="intro-copy">
+            <p>一个因热爱而持续创造的人。</p>
+            <p>做 Minecraft 内容，写软件，也在走向独立游戏。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="directions page-width section" id="directions" aria-labelledby="directions-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label">02 / WHAT I LOVE</p>
+            <h2 id="directions-title">三个方向，<br />一种热爱。</h2>
+          </div>
+          <p>持续学习，慢慢构建。</p>
+        </div>
+        <div class="direction-grid" data-directions></div>
+      </section>
+
+      <section class="now" id="now" aria-labelledby="now-title">
+        <div class="now-inner page-width">
+          <div class="now-copy">
+            <p class="section-label section-label--light">03 / NOW</p>
+            <p class="status"><i></i> CURRENT FOCUS</p>
+            <h2 id="now-title">近期正在做</h2>
+            <div data-now-content></div>
+          </div>
+          <div class="now-visual" data-now-visual aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="journal page-width section" id="journal" aria-labelledby="journal-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label">04 / FIELD NOTES</p>
+            <h2 id="journal-title">最近在<br />想什么？</h2>
+          </div>
+          <p>还在写，也还在做。</p>
+        </div>
+        <div class="journal-list" data-journal></div>
+      </section>
+
+      <section class="channels page-width section" id="channels" aria-labelledby="channels-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label">05 / FIND ME</p>
+            <h2 id="channels-title">在这些地方，<br />继续相遇。</h2>
+          </div>
+        </div>
+        <div class="channel-list" data-channels></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-width footer-inner">
+        <a class="brand" href="#home"><img src="assets/images/logo.png" alt="" /><span>XCzongzi</span></a>
+        <p>© <span data-year></span> XCzongzi</p>
+        <p>Made by AI.</p>
+      </div>
+    </footer>
+
+    <script src="assets/js/content.js"></script>
+    <script src="assets/js/site.js"></script>
+  </body>
+</html>
