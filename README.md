@@ -1,40 +1,32 @@
 # XCzongzi.net
 
-XCzongzi 的个人创作主页。纯 HTML、CSS、JavaScript 构建，不依赖构建工具，可直接部署到任意静态托管服务。
-此项目由AI生成，XCzongzi维护。
+参考 xcshop 关于页的个人网站，使用纯 HTML、CSS、JavaScript，无构建步骤或外部字体依赖。
 
-## 目录结构
+主页仅包含最近的作品、创作方向、联系入口和赞助。左上角身份始终悬浮且背景透明；左侧为纵向滚动的文本导航，平时显示简称，悬浮、键盘聚焦或位于当前区块时显示全称，并以下划线标记，当前区块额外高亮。浅色／深色模式沿用 xcshop 的羊皮纸／琥珀配色，首次访问跟随系统，手动选择会在页面间共用并保存在浏览器中。
 
-```text
-.
-├─ index.html                 # 页面结构
-├─ portfolio/                 # 三个创作方向的作品集页
-├─ assets/
-│  ├─ css/site.css           # 全站视觉与响应式样式
-│  ├─ images/                # Logo 与背景图
-│  └─ js/
-│     ├─ content.js          # 所有可更新内容
-│     └─ site.js             # 内容渲染和交互
-└─ README.md
-```
+外观切换使用独立的图标按钮。首屏提示、首次向下滚轮的 520ms 展开和封面保留比例沿用 xcshop；封面收缩时始终保留图片中心，返回顶部后可再次触发。系统减少动态效果时直接展开。
 
-## 日常更新
+## 文件
 
-编辑 `assets/js/content.js` 即可维护以下内容：
+- `index.html`：主页内容与链接。
+- `assets/css/site.css`：布局、两种配色和响应式样式。
+- `assets/js/site.js`：封面滚动、返回封面和左侧导航定位。
+- `assets/js/theme.js`：显示模式与偏好保存。
+- `assets/js/content.js`：三个创作方向的作品列表。
+- `assets/js/portfolio-page.js`：作品列表渲染。
+- `assets/images/brands/`：xcshop 关于页所用的品牌图标及原始来源说明。
+- `portfolio/`：创作方向的作品页面。
 
-- `directions`：三个长期创作方向；
-- `current`：当前热点项目，可随时替换；对应视觉会自动读取项目名称与标签；
-- `channels`：个人频道名称、简介和链接。
-- `portfolios`：三个作品集的标题、简介、标签和项目列表。
+## 更新作品
 
-新增卡片时复制对应对象并修改字段，不需要调整 HTML。视觉样式统一维护在 `assets/css/site.css`。
-
-为某个作品集添加项目时，在对应的 `projects: []` 中加入：
+主页在 `index.html` 中维护。作品集在 `assets/js/content.js` 的对应 `projects` 数组中添加：
 
 ```js
-{ title: "项目名称", description: "一句简介", url: "https://项目链接" }
+{ title: "作品名称", url: "https://项目链接" }
 ```
 
-## 本地预览
+## 预览
 
-直接用浏览器打开 `index.html`，或使用任意静态文件服务器启动当前目录。
+直接打开 `index.html`，或从此目录启动任意静态 HTTP 服务器。
+
+`CraftBFF/` 为独立站点。

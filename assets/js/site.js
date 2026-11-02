@@ -1,88 +1,109 @@
 (() => {
   "use strict";
+  const cover = document.querySelector("[data-cover]");
+  if (!cover) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const profile = document.querySelector(".profile");
+  const coverReturn = document.querySelector(".cover-return");
+  const revealLink = document.querySelector(".reveal-link");
+  const sections = [...document.querySelectorAll(".information > section[id]")];
+  const links = [...document.querySelectorAll(".side-nav a")];
+  let scheduled = false;
+  let animationFrame = 0;
 
-  const content = window.XCZONGZI_CONTENT;
-  if (!content) return;
+  function revealOffset() {
+    return Math.max(0, cover.getBoundingClientRect().height - parseFloat(getComputedStyle(profile).top));
+  }
 
-  const escapeHTML = (value) => String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  function update() {
+    const scroll = Math.max(0, window.scrollY);
+    const expanded = scroll > 1 || animationFrame !== 0;
+    document.body.classList.toggle("is-expanded", expanded);
+    coverReturn.tabIndex = expanded ? 0 : -1;
+    // As the cover clips from the top, keep the image's center in the
+    // remaining viewport. Stop moving it together with the pinned cover.
+    const coverScroll = Math.min(scroll, revealOffset());
+    cover.style.setProperty("--cover-offset", `${coverScroll * .5}px`);
+    const readingEdge = profile.getBoundingClientRect().bottom + 48;
+    const active = expanded ? sections.filter((section) => section.getBoundingClientRect().top <= readingEdge).at(-1) : null;
+    links.forEach((link) => {
+      if (active && link.hash === `#${active.id}`) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+    scheduled = false;
+  }
 
-  const directionIcons = {
-    minecraft: '<span class="block block-a"></span><span class="block block-b"></span><span class="block block-c"></span>',
-    software: '<code>&lt;/&gt;</code><span class="code-line">love.build();_</span>',
-    "indie-game": '<span class="planet"></span><span class="orbit"></span><small>NEXT WORLD</small>'
-  };
+  function stopAnimation() {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+  }
 
-  const directionsRoot = document.querySelector("[data-directions]");
-  directionsRoot.innerHTML = content.directions.map((item) => `
-    <a class="direction-card direction-card--${escapeHTML(item.id)}" href="${escapeHTML(item.url)}">
-      <div class="card-art">${directionIcons[item.id] || ""}</div>
-      <div class="card-meta"><span>${escapeHTML(item.number)}</span><span>${escapeHTML(item.tags.join(" · "))}</span></div>
-      <h3>${escapeHTML(item.title)}</h3>
-      <p>${escapeHTML(item.description)}</p>
-      <span class="card-link">查看作品集 <b>→</b></span>
-    </a>
-  `).join("");
+  function animateScroll(target) {
+    stopAnimation();
+    const start = window.scrollY;
+    const destination = Math.max(0, Math.min(target, document.documentElement.scrollHeight - window.innerHeight));
+    if (reduceMotion.matches || Math.abs(destination - start) < 1) {
+      window.scrollTo({ top: destination, behavior: "instant" });
+      update();
+      return;
+    }
+    const started = performance.now();
+    function step(now) {
+      const progress = Math.min(1, (now - started) / 520);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      window.scrollTo({ top: start + (destination - start) * eased, behavior: "instant" });
+      if (progress < 1) animationFrame = requestAnimationFrame(step);
+      else animationFrame = 0;
+      update();
+    }
+    animationFrame = requestAnimationFrame(step);
+    update();
+  }
 
-  const current = content.current;
-  document.querySelector("[data-now-content]").innerHTML = `
-    <h3>${escapeHTML(current.title)}</h3>
-    <p>${escapeHTML(current.description)}</p>
-    <div class="tags">${current.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}</div>
-  `;
+  function revealInformation() {
+    if (animationFrame) return;
+    animateScroll(revealOffset());
+  }
 
-  document.querySelector("[data-now-visual]").innerHTML = `
-    <div class="pixel-orbit"></div>
-    <div class="current-poster">
-      <span>NOW BUILDING</span>
-      <strong>${escapeHTML(current.title)}</strong>
-      <small>${escapeHTML(current.tags[0] || "PROJECT")} · WORK IN PROGRESS</small>
-    </div>
-    <b class="poster-mark">XC</b>
-  `;
+  window.addEventListener("wheel", (event) => {
+    if (event.ctrlKey || event.metaKey || event.deltaY === 0 || event.defaultPrevented) return;
+    const rail = event.target.closest?.(".side-rail");
+    if (rail && rail.scrollHeight > rail.clientHeight) return;
+    if (animationFrame) {
+      event.preventDefault();
+      return;
+    }
+    if (window.scrollY <= 1 && event.deltaY > 0) {
+      event.preventDefault();
+      revealInformation();
+    }
+  }, { passive: false });
 
-  document.querySelector("[data-journal]").innerHTML = content.journal.map((entry) => `
-    <article class="journal-entry">
-      <time>${escapeHTML(entry.status)}</time>
-      <h3>${escapeHTML(entry.title)}</h3>
-      <span aria-hidden="true">↗</span>
-    </article>
-  `).join("");
-
-  const channelsRoot = document.querySelector("[data-channels]");
-  channelsRoot.innerHTML = content.channels.map((channel, index) => `
-    <a class="channel" href="${escapeHTML(channel.url)}" target="_blank" rel="noreferrer">
-      <span class="channel-number">0${index + 1}</span>
-      <div><h3>${escapeHTML(channel.name)}</h3><p>${escapeHTML(channel.description)}</p></div>
-      <span class="channel-handle">${escapeHTML(channel.handle)}</span>
-      <span class="channel-arrow" aria-hidden="true">↗</span>
-    </a>
-  `).join("");
-
-  document.querySelector("[data-year]").textContent = new Date().getFullYear();
-
-  const header = document.querySelector("[data-header]");
-  const menu = document.querySelector("[data-menu]");
-  const menuButton = document.querySelector("[data-menu-button]");
-
-  menuButton.addEventListener("click", () => {
-    const isOpen = header.classList.toggle("menu-open");
-    menuButton.setAttribute("aria-expanded", String(isOpen));
-    menuButton.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
-  });
-
-  menu.addEventListener("click", (event) => {
-    if (!event.target.matches("a")) return;
-    header.classList.remove("menu-open");
-    menuButton.setAttribute("aria-expanded", "false");
-  });
-
-  const heroMedia = document.querySelector(".hero-media");
   window.addEventListener("scroll", () => {
-    heroMedia.style.transform = `scale(1.02) translateY(${Math.min(window.scrollY * 0.08, 52)}px)`;
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
   }, { passive: true });
+  window.addEventListener("pageshow", update);
+  window.addEventListener("resize", () => { stopAnimation(); update(); });
+  window.addEventListener("pointerdown", stopAnimation, { passive: true });
+  window.addEventListener("touchstart", stopAnimation, { passive: true });
+  window.addEventListener("keydown", (event) => {
+    if (["Escape", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) stopAnimation();
+  });
+  links.forEach((link) => link.addEventListener("click", stopAnimation));
+
+  revealLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    revealInformation();
+  });
+  profile.addEventListener("click", (event) => {
+    if (!event.defaultPrevented && window.scrollY <= 1 && !event.target.closest("a")) revealInformation();
+  });
+  document.querySelectorAll("[data-cover-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      animateScroll(0);
+      history.replaceState(null, "", `${location.pathname}${location.search}`);
+    });
+  });
+  update();
 })();
