@@ -29,4 +29,14 @@
 
 直接打开 `index.html`，或从此目录启动任意静态 HTTP 服务器。
 
+## 发布到 GitHub Pages
+
+修改样式、脚本或图片后，在站点根目录执行，再一并提交 HTML 和资源文件：
+
+```sh
+node scripts/version-assets.mjs
+```
+
+该命令为主页和作品集引用的本地资源添加内容哈希版本号，避免 GitHub Pages 或 CDN 的旧缓存与新版 HTML 混用。内容不变时版本号保持不变；不会处理 `CraftBFF/`。
+
 `CraftBFF/` 为独立站点。
