@@ -1,10 +1,19 @@
 import { createHash } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const pages = ["index.html", "portfolio/minecraft.html", "portfolio/software.html", "portfolio/indie-game.html"];
+async function projectPages(directory) {
+  const pages = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const absolute = resolve(directory, entry.name);
+    if (entry.isDirectory()) pages.push(...await projectPages(absolute));
+    else if (entry.isFile() && entry.name.endsWith(".html")) pages.push(relative(root, absolute));
+  }
+  return pages.sort();
+}
+const pages = ["index.html", "portfolio/minecraft.html", "portfolio/software.html", "portfolio/indie-game.html", "404.html", ...await projectPages(resolve(root, "projects"))];
 const assetTypes = new Set([".css", ".js", ".svg", ".png"]);
 const versions = new Map();
 
@@ -22,7 +31,7 @@ for (const page of pages) {
     const extension = extname(assetPath).toLowerCase();
     if (!assetTypes.has(extension)) continue;
 
-    const absoluteAsset = resolve(dirname(pagePath), decodeURIComponent(assetPath));
+    const absoluteAsset = assetPath.startsWith("/") ? resolve(root, `.${decodeURIComponent(assetPath)}`) : resolve(dirname(pagePath), decodeURIComponent(assetPath));
     const relativeAsset = relative(root, absoluteAsset);
     if (relativeAsset === ".." || relativeAsset.startsWith(`..${sep}`)) throw new Error(`Asset outside this site: ${assetPath}`);
 

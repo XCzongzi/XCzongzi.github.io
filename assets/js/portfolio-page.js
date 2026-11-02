@@ -17,8 +17,10 @@
     const card = document.createElement("a");
     card.className = "link-card work-card";
     card.href = project.url;
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
+    if (/^https?:\/\//i.test(project.url)) {
+      card.target = "_blank";
+      card.rel = "noopener noreferrer";
+    }
     const icon = document.createElement("span");
     icon.className = "card-icon work-icon";
     const logo = document.createElement("img");

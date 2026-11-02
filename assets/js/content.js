@@ -4,7 +4,7 @@ window.XCZONGZI_CONTENT = {
     minecraft: { title: "Minecraft 内容", projects: [] },
     software: {
       title: "软件",
-      projects: [{ title: "xcshop", url: "https://github.com/XCzongzi/xcshop" }]
+      projects: [{ title: "xcshop", url: "../projects/xcshop/" }]
     },
     "indie-game": { title: "独立游戏", projects: [] }
   }

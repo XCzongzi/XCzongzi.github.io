@@ -1,0 +1,60 @@
+.project-page { --scroll-offset: 36px; }
+.project-main { padding-top: 112px; padding-bottom: 72px; }
+.project-back { display: inline-block; margin-bottom: 30px; color: var(--muted); font-size: 12px; }
+.project-back:hover { color: var(--accent); }
+.project-identity { display: flex; align-items: center; gap: 16px; }
+.project-logo { display: grid; place-items: center; flex: 0 0 auto; width: 62px; height: 62px; border-radius: 16px; background: #000; }
+.project-logo img { width: 42px; height: 42px; }
+.project-main h1 { font-size: 32px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.project-description { margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.project-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 28px 0 0; }
+.project-facts > div { min-width: 0; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.project-facts dt { margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+.project-facts dd { margin: 0; font-size: 16px; overflow-wrap: anywhere; }
+.project-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin-top: 22px; }
+.project-button { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 8px 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font-size: 12px; }
+.project-button:hover { background: var(--card-hover); }
+.project-button--primary { border-color: var(--accent); background: var(--accent); color: var(--paper); }
+:root[data-theme="amber"] .project-button--primary { color: #33251d; }
+.project-button--primary:hover { background: var(--accent); filter: brightness(.95); }
+.project-button:disabled { cursor: wait; opacity: .6; }
+.project-source { color: var(--muted); font-size: 12px; }
+.project-source:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.project-section { margin-top: 44px; }
+.project-section h2 { margin-bottom: 16px; font-size: 18px; font-weight: 600; }
+.project-feedback { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.project-retry { min-height: 32px; margin-top: 10px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; font-size: 12px; }
+.project-retry:hover { background: var(--card); }
+.release-list { border-top: 1px solid var(--line); }
+.release-row { display: flex; align-items: center; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.release-summary { flex: 1; min-width: 0; }
+.release-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.release-title { color: var(--ink); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.release-title:hover { color: var(--accent); }
+.release-date { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+.release-badge { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.release-badge--latest { border-color: var(--accent); color: var(--accent); }
+.release-download { flex: 0 0 auto; min-height: 34px; display: inline-flex; align-items: center; color: var(--accent); font-size: 12px; }
+.release-download:hover { text-decoration: underline; text-underline-offset: 4px; }
+.release-more { margin-top: 18px; }
+.download-files { display: grid; gap: 10px; }
+.download-file { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 78px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.download-file:hover { background: var(--card-hover); }
+.download-file-name { display: block; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.download-file-size { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+.download-file-action { flex: 0 0 auto; color: var(--accent); font-size: 12px; }
+.download-empty { color: var(--muted); font-size: 13px; }
+.project-page [hidden] { display: none !important; }
+@media (max-width: 600px) {
+  .project-main { padding-top: 94px; }
+  .project-identity { gap: 12px; }
+  .project-logo { width: 46px; height: 46px; border-radius: 12px; }
+  .project-logo img { width: 32px; height: 32px; }
+  .project-main h1 { font-size: 25px; }
+  .project-facts { grid-template-columns: 1fr; gap: 0; margin-top: 20px; }
+  .project-facts dd { font-size: 14px; }
+  .project-section { margin-top: 32px; }
+  .release-row { gap: 12px; }
+  .release-title { font-size: 13px; }
+  .download-file { align-items: start; flex-direction: column; gap: 9px; padding: 14px; }
+}
