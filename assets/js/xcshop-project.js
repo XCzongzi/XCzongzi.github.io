@@ -100,7 +100,7 @@
       const time = node("time", "release-date", dateValue(release.published_at));
       if (release.published_at && Number.isFinite(Date.parse(release.published_at))) time.dateTime = release.published_at;
       summary.append(heading, time);
-      const download = node("a", "release-download", "下载 ↗");
+      const download = node("a", "release-download", "下载");
       download.href = versionURL(release.tag_name);
       download.setAttribute("aria-label", `下载 xcshop ${release.tag_name}`);
       row.append(summary, download);
@@ -141,7 +141,7 @@
       summary.append(node("span", "download-file-name", asset.name || "下载文件"));
       const size = fileSize(asset.size);
       if (size) summary.append(node("span", "download-file-size", size));
-      link.append(summary, node("span", "download-file-action", "下载 ↓"));
+      link.append(summary, node("span", "download-file-action", "下载"));
       files.append(link);
     }
     if (!files.children.length) files.append(node("p", "download-empty", "此版本尚未上传下载文件。"));
