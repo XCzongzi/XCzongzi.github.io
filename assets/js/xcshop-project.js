@@ -3,6 +3,10 @@
   const BASE = "https://xczongzi.net/projects/xcshop";
   const REPO = "https://github.com/XCzongzi/xcshop";
   const API = "https://api.github.com/repos/XCzongzi/xcshop/releases";
+  const CACHE_TTL = 10 * 60 * 1000;
+  const CACHE_PREFIX = "xcshop-releases:v1:";
+  const cache = new Map();
+  const requests = new Map();
   const main = document.querySelector("[data-project-main]");
   if (!main) return;
 
@@ -48,19 +52,68 @@
     return element;
   }
 
-  async function request(url, allowMissing = false) {
+  function readCache(key) {
+    try {
+      const entry = JSON.parse(localStorage.getItem(key));
+      if (entry && Number.isFinite(entry.requestedAt)) return entry;
+    } catch { /* Storage may be unavailable. Keep caching in this page. */ }
+    return cache.get(key);
+  }
+
+  function writeCache(key, entry) {
+    cache.set(key, entry);
+    try { localStorage.setItem(key, JSON.stringify(entry)); } catch { /* Use the in-memory cache. */ }
+  }
+
+  async function cachedRequest(url) {
+    const key = CACHE_PREFIX + url;
+    const previous = readCache(key);
+    if (previous && Date.now() - previous.requestedAt < CACHE_TTL) {
+      if (previous.result) return previous.result;
+      const error = new Error("Release query is cooling down");
+      error.status = previous.status;
+      error.cooldown = true;
+      throw error;
+    }
+    // Record the attempt before fetching: failures and reloads cannot bypass the interval.
+    const entry = { requestedAt: Date.now(), result: previous?.result || null };
+    writeCache(key, entry);
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
     try {
       const response = await fetch(url, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store", credentials: "omit", signal: controller.signal });
-      if (allowMissing && response.status === 404) return { value: null, hasMore: false };
-      if (!response.ok) {
+      if (!response.ok && response.status !== 404) {
         const error = new Error("Release request failed");
         error.status = response.status;
         throw error;
       }
-      return { value: await response.json(), hasMore: /rel="next"/.test(response.headers.get("Link") || "") };
+      const result = { value: response.status === 404 ? null : await response.json(), hasMore: /rel="next"/.test(response.headers.get("Link") || ""), status: response.status };
+      writeCache(key, { ...entry, result });
+      return result;
+    } catch (error) {
+      writeCache(key, { ...entry, status: error.status });
+      if (entry.result) return entry.result;
+      error.cooldown = true;
+      throw error;
     } finally { clearTimeout(timer); }
+  }
+
+  async function request(url, allowMissing = false) {
+    if (!requests.has(url)) {
+      // Web Locks serialize the same query across tabs before checking localStorage.
+      const pending = navigator.locks
+        ? navigator.locks.request(CACHE_PREFIX + url, () => cachedRequest(url))
+        : cachedRequest(url);
+      requests.set(url, pending);
+      pending.finally(() => requests.delete(url)).catch(() => {});
+    }
+    const result = await requests.get(url);
+    if (result.status === 404 && !allowMissing) {
+      const error = new Error("Release request failed");
+      error.status = 404;
+      throw error;
+    }
+    return result;
   }
 
   async function releaseList(number = 1) {
@@ -154,7 +207,7 @@
     } catch (error) {
       document.querySelector("[data-version]").textContent = "暂不可用";
       document.querySelector("[data-date]").textContent = "—";
-      feedback.textContent = error.status === 403 || error.status === 429 ? "版本查询暂时过于频繁，请稍后重试，或前往 GitHub。" : "暂时无法获取版本信息，请重试或前往 GitHub。";
+      feedback.textContent = error.cooldown ? "暂时无法获取版本信息，请在本次查询满 10 分钟后重试。" : error.status === 403 || error.status === 429 ? "版本查询暂时过于频繁，请稍后重试，或前往 GitHub。" : "暂时无法获取版本信息，请重试或前往 GitHub。";
       retry.hidden = false;
     } finally {
       pending = false;
