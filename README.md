@@ -37,14 +37,14 @@
 ## xcshop 版本页面
 
 - `/projects/xcshop/`：项目简介、最新版本、发布时间和版本列表。
-- `/projects/xcshop/releases/`：最新版的下载文件。
-- `/projects/xcshop/v0.0.1/`：指定版本的下载文件。
+- `/projects/xcshop/releases`：最新版安装包下载地址。
+- `/projects/xcshop/v0.0.1`：指定版本安装包下载地址。
 
 页面每次加载时请求 `XCzongzi/xcshop` 的公开 GitHub Releases，不需要密钥。最新版本优先使用 GitHub 的 latest 标记；没有正式版本时展示最近发布的预发布版本。日期按北京时间显示，版本列表按发布时间倒序排列，每次加载 30 项，可继续加载。
 
-尚未发布、版本不存在、没有下载附件和请求失败时分别显示对应状态；失败可重试，也可使用页面上的 GitHub 链接。下载文件直接使用 Release 附件的下载地址。
+尚未发布、版本不存在和请求失败时显示对应状态；失败可重试。GitHub API 只用于读取版本信息，所有安装包下载均使用现有的本站下载地址：`https://xczongzi.net/projects/xcshop/releases` 下载最新版，`https://xczongzi.net/projects/xcshop/<版本标签>` 下载指定版本。下载链接不添加尾部斜杠，也不使用 GitHub 附件地址。
 
-`v0.0.1` 提供静态目录入口。未来新版本的 `/projects/xcshop/<版本标签>` 由 GitHub Pages 的 `404.html` 读取标签并显示下载内容，不需要为每次发版重新部署网页。该回退页面的 HTTP 状态仍为 404；仅在 xcshop 版本路径上加载版本信息，其它不存在的路径显示普通未找到页面。本地服务器要预览未来版本路径，也需把未命中请求交给 `404.html`。
+安装包由域名上已有的下载服务返回；此静态仓库只提供项目页面及下载入口，不额外部署代理。原有下载 HTML 和 `404.html` 作为静态回退页面，也只链接本站下载地址。未来版本列表由 GitHub Releases 自动生成，无需逐个添加静态页面。
 
 ## 发布到 GitHub Pages
 

@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const BASE = "/projects/xcshop";
+  const BASE = "https://xczongzi.net/projects/xcshop";
   const REPO = "https://github.com/XCzongzi/xcshop";
   const API = "https://api.github.com/repos/XCzongzi/xcshop/releases";
   const main = document.querySelector("[data-project-main]");
@@ -108,43 +108,16 @@
     }
   }
 
-  function assetURL(value) {
-    try {
-      const url = new URL(value);
-      return url.protocol === "https:" && url.hostname === "github.com" && url.pathname.startsWith("/XCzongzi/xcshop/releases/download/") ? url.href : null;
-    } catch { return null; }
-  }
-
-  function fileSize(value) {
-    if (!Number.isFinite(value) || value < 0) return "";
-    if (value < 1024) return `${value} B`;
-    if (value < 1024 ** 2) return `${(value / 1024).toFixed(1)} KB`;
-    if (value < 1024 ** 3) return `${(value / 1024 ** 2).toFixed(1)} MB`;
-    return `${(value / 1024 ** 3).toFixed(1)} GB`;
-  }
-
   function renderDownloads(release) {
     const files = document.querySelector("[data-download-files]");
-    files.replaceChildren();
     const source = document.querySelector("[data-release-source]");
     source.href = githubReleaseURL(release.tag_name);
     source.hidden = false;
     const badge = document.querySelector("[data-prerelease]");
     if (badge) badge.hidden = !release.prerelease;
-    const assets = Array.isArray(release.assets) ? release.assets : [];
-    for (const asset of assets) {
-      const url = assetURL(asset.browser_download_url);
-      if (!url || asset.state !== "uploaded") continue;
-      const link = node("a", "download-file");
-      link.href = url;
-      const summary = node("span");
-      summary.append(node("span", "download-file-name", asset.name || "下载文件"));
-      const size = fileSize(asset.size);
-      if (size) summary.append(node("span", "download-file-size", size));
-      link.append(summary, node("span", "download-file-action", "下载"));
-      files.append(link);
-    }
-    if (!files.children.length) files.append(node("p", "download-empty", "此版本尚未上传下载文件。"));
+    const link = node("a", "download-file", requestedTag ? "下载 xcshop " + release.tag_name : "下载最新版");
+    link.href = requestedTag ? versionURL(release.tag_name) : BASE + "/releases";
+    files.replaceChildren(link);
   }
 
   async function load() {
