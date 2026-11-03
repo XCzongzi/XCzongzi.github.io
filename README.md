@@ -38,11 +38,11 @@
 
 - `/projects/xcshop/`：项目简介、最新版本、发布时间和版本列表。
 - `/projects/xcshop/releases`：最新版安装包下载地址。
-- `/projects/xcshop/v0.0.1`：指定版本安装包下载地址。
+- `/projects/xcshop/releases/v0.0.1`：指定版本安装包下载地址。
 
 页面每次加载时请求 `XCzongzi/xcshop` 的公开 GitHub Releases，不需要密钥。最新版本优先使用 GitHub 的 latest 标记；没有正式版本时展示最近发布的预发布版本。日期按北京时间显示，版本列表按发布时间倒序排列，每次加载 30 项，可继续加载。
 
-尚未发布、版本不存在和请求失败时显示对应状态；失败可重试。GitHub API 只用于读取版本信息，所有安装包下载均使用现有的本站下载地址：`https://xczongzi.net/projects/xcshop/releases` 下载最新版，`https://xczongzi.net/projects/xcshop/<版本标签>` 下载指定版本。下载链接不添加尾部斜杠，也不使用 GitHub 附件地址。
+尚未发布、版本不存在和请求失败时显示对应状态；失败可重试。GitHub API 只用于读取版本信息，所有安装包下载均使用现有的本站下载地址：`https://xczongzi.net/projects/xcshop/releases` 下载最新版，`https://xczongzi.net/projects/xcshop/releases/<版本标签>` 下载指定版本。项目主页的版本列表直接链接安装包，无需进入历史版本页面。下载链接不添加尾部斜杠，也不使用 GitHub 附件地址。
 
 安装包由域名上已有的下载服务返回；此静态仓库只提供项目页面及下载入口，不额外部署代理。原有下载 HTML 和 `404.html` 作为静态回退页面，也只链接本站下载地址。未来版本列表由 GitHub Releases 自动生成，无需逐个添加静态页面。
 

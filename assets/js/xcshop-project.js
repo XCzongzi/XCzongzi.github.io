@@ -35,7 +35,7 @@
   let pending = false;
   const shown = new Set();
 
-  const versionURL = (tag) => `${BASE}/${encodeURIComponent(tag)}`;
+  const versionURL = (tag) => `${BASE}/releases/${encodeURIComponent(tag)}`;
   const githubReleaseURL = (tag) => `${REPO}/releases/tag/${encodeURIComponent(tag)}`;
   const dateValue = (value) => Number.isFinite(Date.parse(value)) ? dateFormat.format(new Date(value)) : "—";
   const isRelease = (value) => value && typeof value.tag_name === "string" && value.tag_name.length > 0 && value.draft !== true;
