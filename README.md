@@ -17,7 +17,7 @@
 - `assets/images/brands/`：xcshop 关于页所用的品牌图标及原始来源说明。
 - `portfolio/`：创作方向的作品页面。
 - `projects/xcshop/`：xcshop 项目详情与下载页面。
-- `assets/js/xcshop-project.js`：加载 GitHub Releases、版本列表和下载文件。
+- `assets/js/xcshop-project.js`：读取本站版本 JSON，展示版本列表、发布详情和下载入口。
 - `404.html`：GitHub Pages 的未命中路径处理，以及新版本下载页的动态入口。
 
 ## 更新作品
@@ -40,11 +40,13 @@
 - `/projects/xcshop/releases`：最新版安装包下载地址。
 - `/projects/xcshop/releases/v0.0.1`：指定版本安装包下载地址。
 
-页面通过 `XCzongzi/xcshop` 的公开 GitHub Releases 获取版本，不需要密钥。每个查询地址在同一浏览器、同一站点内缓存 10 分钟；刷新、重新打开、重试均不能提前再次请求。分页分别缓存，首次加载新的一页仍会请求。失败也遵守 10 分钟间隔，有旧数据时继续显示旧数据；支持 Web Locks 的浏览器会合并多标签页的相同查询。禁用浏览器存储时仅保留当前页面内存缓存。到期后在下次加载或查询时更新，不后台轮询。最新版本优先使用 GitHub 的 latest 标记；没有正式版本时展示最近发布的预发布版本。日期按北京时间显示，版本列表按发布时间倒序排列，每次加载 30 项，可继续加载。
+页面读取 `https://xczongzi.net/projects/xcshop/downloads/versions.json` 的文本并解析 JSON（schema_version 为 1，repository 为 XCzongzi/xcshop，releases 为数组），不再查询 GitHub API。已移除十分钟本地缓存和请求冷却。同一页面只获取一次完整数据，并合并进行中的请求；展开详情、加载更多均不追加网络请求，不轮询，也不自动重试。刷新和重新访问遵循服务器的标准 HTTP 缓存头（当前为 max-age=300，带 ETag），不再由前端设置固定等待时间；失败可手动立即重试。
 
-尚未发布、版本不存在和请求失败时显示对应状态；失败可重试。GitHub API 只用于读取版本信息，所有安装包下载均使用现有的本站下载地址：`https://xczongzi.net/projects/xcshop/releases` 下载最新版，`https://xczongzi.net/projects/xcshop/releases/<版本标签>` 下载指定版本。项目主页的版本列表直接链接安装包，无需进入历史版本页面。下载链接不添加尾部斜杠，也不使用 GitHub 附件地址。
+版本按发布时间倒序排列，优先将最近发布的正式版作为最新版；没有正式版时使用最近的预发布版本。日期按北京时间显示，每批展示 30 项，更多版本从已加载的数据中展示。每个版本列出发布名称，并可展开查看发布说明、附件名称、大小、类型和摘要校验值；缺失信息显示相应空状态。说明按纯文本展示，不执行其中的 HTML。
 
-安装包由域名上已有的下载服务返回；此静态仓库只提供项目页面及下载入口，不额外部署代理。原有下载 HTML 和 `404.html` 作为静态回退页面，也只链接本站下载地址。未来版本列表由 GitHub Releases 自动生成，无需逐个添加静态页面。
+尚未发布、版本不存在和请求失败时显示对应状态；失败可重试。所有安装包下载均使用现有的本站下载地址：`https://xczongzi.net/projects/xcshop/releases` 下载最新版，`https://xczongzi.net/projects/xcshop/releases/<版本标签>` 下载指定版本。项目主页的版本列表直接链接安装包，无需进入历史版本页面。下载链接不添加尾部斜杠，也不使用 JSON 中的 GitHub 附件地址。
+
+安装包和版本 JSON 由域名上已有的服务提供；此静态仓库只提供项目页面及下载入口，不额外部署代理。原有下载 HTML 和 `404.html` 作为静态回退页面，也从同一份 JSON 读取详情并链接本站下载地址。更新 JSON 即可同步版本列表，无需逐个添加静态页面。
 
 ## 发布到 GitHub Pages
 

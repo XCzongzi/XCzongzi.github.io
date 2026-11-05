@@ -2,18 +2,16 @@
   "use strict";
   const BASE = "https://xczongzi.net/projects/xcshop";
   const REPO = "https://github.com/XCzongzi/xcshop";
-  const API = "https://api.github.com/repos/XCzongzi/xcshop/releases";
-  const CACHE_TTL = 10 * 60 * 1000;
-  const CACHE_PREFIX = "xcshop-releases:v1:";
-  const cache = new Map();
-  const requests = new Map();
+  const VERSIONS_URL = BASE + "/downloads/versions.json";
+  const PAGE_SIZE = 30;
+  let manifestRequest = null;
   const main = document.querySelector("[data-project-main]");
   if (!main) return;
 
   const mode = document.body.dataset.projectPage;
   let requestedTag = document.body.dataset.releaseTag || null;
   if (mode === "route") {
-    const match = location.pathname.match(/^\/projects\/xcshop\/([^/]+)\/?$/);
+    const match = location.pathname.match(/^\/projects\/xcshop\/(?:releases\/)?([^/]+)\/?$/);
     try { requestedTag = match ? decodeURIComponent(match[1]) : null; } catch { requestedTag = null; }
     if (!requestedTag || requestedTag === "." || requestedTag === ".." || requestedTag === "index.html") {
       document.title = "页面不存在 · XCzongzi";
@@ -35,7 +33,8 @@
   const more = document.querySelector("[data-more]");
   const dateFormat = new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" });
   let latest = null;
-  let page = 1;
+  let visibleCount = 0;
+  let releases = [];
   let pending = false;
   const shown = new Set();
 
@@ -52,81 +51,58 @@
     return element;
   }
 
-  function readCache(key) {
-    try {
-      const entry = JSON.parse(localStorage.getItem(key));
-      if (entry && Number.isFinite(entry.requestedAt)) return entry;
-    } catch { /* Storage may be unavailable. Keep caching in this page. */ }
-    return cache.get(key);
-  }
-
-  function writeCache(key, entry) {
-    cache.set(key, entry);
-    try { localStorage.setItem(key, JSON.stringify(entry)); } catch { /* Use the in-memory cache. */ }
-  }
-
-  async function cachedRequest(url) {
-    const key = CACHE_PREFIX + url;
-    const previous = readCache(key);
-    if (previous && Date.now() - previous.requestedAt < CACHE_TTL) {
-      if (previous.result) return previous.result;
-      const error = new Error("Release query is cooling down");
-      error.status = previous.status;
-      error.cooldown = true;
-      throw error;
-    }
-    // Record the attempt before fetching: failures and reloads cannot bypass the interval.
-    const entry = { requestedAt: Date.now(), result: previous?.result || null };
-    writeCache(key, entry);
+  function fetchManifest() {
+    if (manifestRequest) return manifestRequest;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
-    try {
-      const response = await fetch(url, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store", credentials: "omit", signal: controller.signal });
-      if (!response.ok && response.status !== 404) {
-        const error = new Error("Release request failed");
-        error.status = response.status;
-        throw error;
+    // One document request per page; let HTTP Cache-Control/ETag govern reloads.
+    manifestRequest = (async () => {
+      try {
+        const response = await fetch(VERSIONS_URL, { cache: "default", credentials: "omit", signal: controller.signal });
+        if (!response.ok) throw new Error("Version manifest request failed");
+        const data = JSON.parse((await response.text()).replace(/^\uFEFF/, ""));
+        if (!data || data.schema_version !== 1 || data.repository !== "XCzongzi/xcshop" || !Array.isArray(data.releases)) {
+          throw new Error("Invalid version manifest");
+        }
+        return sortReleases(data.releases);
+      } finally { clearTimeout(timer); }
+    })().catch(error => { manifestRequest = null; throw error; });
+    return manifestRequest;
+  }
+
+  function fileSize(value) {
+    if (!Number.isFinite(value) || value < 0) return "";
+    const units = ["B", "KB", "MB", "GB"];
+    let size = value, unit = 0;
+    while (size >= 1024 && unit < units.length - 1) { size /= 1024; unit += 1; }
+    return (unit ? size.toFixed(1) : size) + " " + units[unit];
+  }
+
+  function releaseDetails(release) {
+    const details = node("details", "release-details");
+    details.append(node("summary", "release-details-toggle", "发布详情"));
+    const content = node("div", "release-details-content");
+    content.append(node("p", "release-notes", typeof release.body === "string" && release.body.trim() ? release.body.trim() : "暂无发布说明。"));
+    const assets = Array.isArray(release.assets) ? release.assets.filter(asset => asset && typeof asset.name === "string") : [];
+    if (assets.length) {
+      const list = node("ul", "release-assets");
+      for (const asset of assets) {
+        const item = node("li", "release-asset");
+        item.append(node("p", "release-asset-name", asset.name));
+        const metadata = [fileSize(asset.size), typeof asset.content_type === "string" ? asset.content_type : ""].filter(Boolean);
+        if (metadata.length) item.append(node("p", "release-asset-meta", metadata.join(" · ")));
+        if (typeof asset.digest === "string" && asset.digest) item.append(node("code", "release-digest", asset.digest));
+        list.append(item);
       }
-      const result = { value: response.status === 404 ? null : await response.json(), hasMore: /rel="next"/.test(response.headers.get("Link") || ""), status: response.status };
-      writeCache(key, { ...entry, result });
-      return result;
-    } catch (error) {
-      writeCache(key, { ...entry, status: error.status });
-      if (entry.result) return entry.result;
-      error.cooldown = true;
-      throw error;
-    } finally { clearTimeout(timer); }
-  }
-
-  async function request(url, allowMissing = false) {
-    if (!requests.has(url)) {
-      // Web Locks serialize the same query across tabs before checking localStorage.
-      const pending = navigator.locks
-        ? navigator.locks.request(CACHE_PREFIX + url, () => cachedRequest(url))
-        : cachedRequest(url);
-      requests.set(url, pending);
-      pending.finally(() => requests.delete(url)).catch(() => {});
-    }
-    const result = await requests.get(url);
-    if (result.status === 404 && !allowMissing) {
-      const error = new Error("Release request failed");
-      error.status = 404;
-      throw error;
-    }
-    return result;
-  }
-
-  async function releaseList(number = 1) {
-    const result = await request(`${API}?per_page=30&page=${number}`);
-    if (!Array.isArray(result.value)) throw new Error("Invalid release list");
-    return { items: sortReleases(result.value), hasMore: result.hasMore };
-  }
-
-  async function latestRelease() {
-    const result = await request(`${API}/latest`, true);
-    if (isRelease(result.value)) return result.value;
-    const list = await releaseList();
-    return list.items[0] || null;
+      content.append(list);
+    } else content.append(node("p", "release-asset-meta", "暂无附件信息。"));
+    const source = node("a", "project-source", "在 GitHub 查看发布说明");
+    source.href = githubReleaseURL(release.tag_name);
+    source.target = "_blank";
+    source.rel = "noopener noreferrer";
+    content.append(source);
+    details.append(content);
+    return details;
   }
 
   function updateFacts(release) {
@@ -152,11 +128,13 @@
       if (release.prerelease) heading.append(node("span", "release-badge", "预发布"));
       const time = node("time", "release-date", dateValue(release.published_at));
       if (release.published_at && Number.isFinite(Date.parse(release.published_at))) time.dateTime = release.published_at;
-      summary.append(heading, time);
+      summary.append(heading);
+      if (typeof release.name === "string" && release.name.trim() && release.name.trim() !== release.tag_name) summary.append(node("p", "release-name", release.name.trim()));
+      summary.append(time);
       const download = node("a", "release-download", "下载");
       download.href = versionURL(release.tag_name);
       download.setAttribute("aria-label", `下载 xcshop ${release.tag_name}`);
-      row.append(summary, download);
+      row.append(summary, download, releaseDetails(release));
       list.append(row);
     }
   }
@@ -170,7 +148,11 @@
     if (badge) badge.hidden = !release.prerelease;
     const link = node("a", "download-file", requestedTag ? "下载 xcshop " + release.tag_name : "下载最新版");
     link.href = requestedTag ? versionURL(release.tag_name) : BASE + "/releases";
+    const details = releaseDetails(release);
+    details.open = true;
     files.replaceChildren(link);
+    if (typeof release.name === "string" && release.name.trim() && release.name.trim() !== release.tag_name) files.append(node("p", "release-name", release.name.trim()));
+    files.append(details);
   }
 
   async function load() {
@@ -180,21 +162,20 @@
     retry.hidden = true;
     feedback.textContent = "正在获取版本信息…";
     try {
+      releases = await fetchManifest();
+      latest = releases.find(release => !release.prerelease) || releases[0] || null;
       if (overview) {
-        const [list, newest] = await Promise.all([releaseList(), request(`${API}/latest`, true)]);
-        latest = isRelease(newest.value) ? newest.value : list.items[0] || null;
         updateFacts(latest);
         const latestLink = document.querySelector("[data-latest-download]");
         latestLink.hidden = !latest;
         shown.clear();
-        page = 1;
+        visibleCount = PAGE_SIZE;
         document.querySelector("[data-release-list]").replaceChildren();
-        appendReleases(list.items);
-        more.hidden = !list.hasMore;
-        feedback.textContent = list.items.length ? "" : "尚未发布版本。";
+        appendReleases(releases.slice(0, visibleCount));
+        more.hidden = visibleCount >= releases.length;
+        feedback.textContent = releases.length ? "" : "尚未发布版本。";
       } else {
-        const result = requestedTag ? await request(`${API}/tags/${encodeURIComponent(requestedTag)}`, true) : { value: await latestRelease() };
-        const release = isRelease(result.value) ? result.value : null;
+        const release = requestedTag ? releases.find(item => item.tag_name === requestedTag) || null : latest;
         updateFacts(release);
         const title = requestedTag ? `下载 xcshop ${requestedTag}` : "下载 xcshop";
         document.querySelector("[data-download-title]").textContent = title;
@@ -204,10 +185,10 @@
         if (release) renderDownloads(release);
         feedback.textContent = release ? "" : requestedTag ? `未找到版本 ${requestedTag}。` : "尚未发布版本。";
       }
-    } catch (error) {
+    } catch {
       document.querySelector("[data-version]").textContent = "暂不可用";
       document.querySelector("[data-date]").textContent = "—";
-      feedback.textContent = error.cooldown ? "暂时无法获取版本信息，请在本次查询满 10 分钟后重试。" : error.status === 403 || error.status === 429 ? "版本查询暂时过于频繁，请稍后重试，或前往 GitHub。" : "暂时无法获取版本信息，请重试或前往 GitHub。";
+      feedback.textContent = "暂时无法获取版本信息，请重试。";
       retry.hidden = false;
     } finally {
       pending = false;
@@ -216,24 +197,10 @@
   }
 
   retry.addEventListener("click", load);
-  more?.addEventListener("click", async () => {
-    if (pending) return;
-    pending = true;
-    more.disabled = true;
-    more.textContent = "正在加载…";
-    try {
-      const result = await releaseList(page + 1);
-      appendReleases(result.items);
-      page += 1;
-      more.hidden = !result.hasMore;
-      feedback.textContent = "";
-    } catch {
-      feedback.textContent = "暂时无法加载更多版本，请稍后再试。";
-    } finally {
-      pending = false;
-      more.disabled = false;
-      more.textContent = "加载更多版本";
-    }
+  more?.addEventListener("click", () => {
+    appendReleases(releases.slice(visibleCount, visibleCount + PAGE_SIZE));
+    visibleCount += PAGE_SIZE;
+    more.hidden = visibleCount >= releases.length;
   });
   load();
 })();

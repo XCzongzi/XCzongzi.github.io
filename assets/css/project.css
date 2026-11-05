@@ -26,12 +26,24 @@
 .project-retry { min-height: 32px; margin-top: 10px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; font-size: 12px; }
 .project-retry:hover { background: var(--card); }
 .release-list { border-top: 1px solid var(--line); }
-.release-row { display: flex; align-items: center; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.release-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
 .release-summary { flex: 1; min-width: 0; }
 .release-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
 .release-title { color: var(--ink); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
 .release-title:hover { color: var(--accent); }
 .release-date { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+.release-name { margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.release-details { grid-column: 1 / -1; min-width: 0; }
+.release-details-toggle { display: inline-block; color: var(--muted); font-size: 12px; cursor: pointer; list-style: none; text-decoration: underline; text-underline-offset: 4px; }
+.release-details-toggle::-webkit-details-marker { display: none; }
+.release-details-toggle:hover, .release-details[open] > summary { color: var(--accent); }
+.release-details-content { margin-top: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+.release-notes { font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.release-assets { display: grid; gap: 14px; margin: 16px 0; padding: 0; list-style: none; }
+.release-asset { min-width: 0; }
+.release-asset-name { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.release-asset-meta { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.release-digest { display: block; margin-top: 6px; color: var(--muted); font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; user-select: text; }
 .release-badge { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-size: 10px; white-space: nowrap; }
 .release-badge--latest { border-color: var(--accent); color: var(--accent); }
 .release-download { flex: 0 0 auto; min-height: 34px; display: inline-flex; align-items: center; color: var(--accent); font-size: 12px; }
