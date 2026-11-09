@@ -1,0 +1,79 @@
+/* Minecraft pages share the site's parchment / amber palette. */
+.minecraft-page { --scroll-offset: 36px; }
+.minecraft-page [hidden] { display: none !important; }
+.minecraft-page .portfolio-main h1 { margin-bottom: 12px; }
+.minecraft-intro { color: var(--muted); line-height: 1.9; }
+.minecraft-list-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin: 30px 0 14px; color: var(--muted); font-size: 12px; }
+.minecraft-card { align-items: stretch; gap: 0; padding: 0; overflow: hidden; }
+.minecraft-card-image { align-self: stretch; flex: 0 0 28%; width: 28%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--icon-bg); }
+.minecraft-card-image--contain { padding: 22px; object-fit: contain; }
+.minecraft-card-copy { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; padding: 22px 26px; }
+.minecraft-card-meta { margin-bottom: 7px; color: var(--accent); font-size: 11px; }
+.minecraft-card h2 { line-height: 1.5; }
+.minecraft-card-summary { margin-top: 9px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.minecraft-card-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin-top: 17px; color: var(--muted); font-size: 11px; }
+.minecraft-card-action { color: var(--accent); }
+.minecraft-detail h1 { margin-top: 8px; }
+.minecraft-eyebrow { color: var(--accent); font-size: 12px; }
+.minecraft-detail .project-description { max-width: 48em; }
+.minecraft-detail .project-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.minecraft-detail .project-facts dd { font-size: 14px; }
+.minecraft-hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: center; gap: 32px; }
+.minecraft-hero-image { width: 100%; height: auto; max-height: 320px; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 12px; object-fit: cover; background: var(--card); }
+.minecraft-hero-image--contain { padding: 32px; object-fit: contain; }
+.minecraft-prose p + p { margin-top: 14px; }
+.minecraft-prose { line-height: 1.95; }
+.minecraft-notes { margin: 20px 0 0; padding: 14px 18px 14px 34px; border-left: 2px solid var(--accent); background: var(--card); color: var(--muted); font-size: 12px; }
+.minecraft-notes li + li { margin-top: 7px; }
+.minecraft-related { display: inline-block; margin-top: 14px; }
+.minecraft-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.minecraft-gallery figure { min-width: 0; margin: 0; }
+.minecraft-gallery button { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); cursor: zoom-in; }
+.minecraft-gallery button:hover { border-color: var(--accent); }
+.minecraft-gallery img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.minecraft-gallery figcaption { margin-top: 8px; color: var(--muted); font-size: 11px; }
+.minecraft-gallery:has(figure:only-child) { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+.minecraft-downloads { display: grid; gap: 12px; }
+.minecraft-download { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 20px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.minecraft-download strong { display: block; font-size: 14px; font-weight: 600; }
+.minecraft-download-url { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.minecraft-download-info { flex: 1; min-width: 0; }
+.minecraft-download-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.minecraft-code { color: var(--muted); font-size: 12px; }
+.minecraft-code button { min-height: 32px; margin-left: 6px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: transparent; }
+.minecraft-code button:hover { background: var(--card-hover); }
+.minecraft-install { margin: 20px 0 0; padding-left: 22px; color: var(--muted); font-size: 12px; line-height: 1.9; }
+.minecraft-credit { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+.minecraft-viewer { width: min(1120px, calc(100% - 32px)); max-height: calc(100svh - 32px); padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); }
+.minecraft-viewer::backdrop { background: #000b; }
+.minecraft-viewer-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
+.minecraft-viewer h2 { font-size: 14px; font-weight: 600; }
+.minecraft-viewer button { min-width: 40px; min-height: 40px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); }
+.minecraft-viewer button:hover { background: var(--card-hover); }
+.minecraft-viewer img { width: 100%; height: auto; max-height: calc(100svh - 200px); object-fit: contain; }
+.minecraft-viewer-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.minecraft-viewer-controls { display: flex; gap: 8px; }
+.minecraft-page:has(.minecraft-viewer[open]) { overflow: hidden; }
+@media (max-width: 900px) {
+  .minecraft-card-copy { padding: 18px; }
+  .minecraft-card-image { flex-basis: 31%; width: 31%; }
+  .minecraft-hero { gap: 22px; }
+  .minecraft-detail .project-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .minecraft-page .page-width { width: calc(100% - 88px); margin-left: 70px; margin-right: 18px; }
+  .minecraft-list-heading { margin-top: 24px; font-size: 11px; }
+  .minecraft-card-image { align-self: center; flex: 0 0 28%; width: 28%; margin-left: 12px; border-radius: 6px; object-fit: contain; background: transparent; }
+  .minecraft-card-image--contain { padding: 10px; }
+  .minecraft-card-copy { padding: 13px 12px; }
+  .minecraft-card-meta { margin-bottom: 4px; font-size: 10px; }
+  .minecraft-card h2 { font-size: 14px; }
+  .minecraft-card-summary { margin-top: 6px; font-size: 11px; line-height: 1.65; }
+  .minecraft-card-footer { margin-top: 10px; font-size: 10px; }
+  .minecraft-hero { grid-template-columns: 1fr; gap: 22px; }
+  .minecraft-hero-image { max-height: none; aspect-ratio: 16 / 10; }
+  .minecraft-hero-image--contain { padding: 24px; }
+  .minecraft-detail .project-facts { gap: 0 14px; }
+  .minecraft-gallery { grid-template-columns: 1fr; gap: 20px; }
+  .minecraft-download { align-items: stretch; flex-direction: column; padding: 14px; }
+}

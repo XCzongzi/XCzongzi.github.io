@@ -14,9 +14,13 @@
 - `assets/js/theme.js`：显示模式与偏好保存。
 - `assets/js/content.js`：三个创作方向的作品列表。
 - `assets/js/portfolio-page.js`：作品列表渲染。
+- `assets/css/minecraft.css`：Minecraft 左图右文作品卡片、详情页、下载区及图片预览样式。
+- `assets/js/minecraft-project.js`：Minecraft 详情页、截图放大浏览与提取码复制。
+- `assets/images/minecraft/`：本地作品配图和来源记录。
 - `assets/images/brands/`：xcshop 关于页所用的品牌图标及原始来源说明。
 - `portfolio/`：创作方向的作品页面。
 - `projects/xcshop/`：xcshop 项目详情与下载页面。
+- `projects/minecraft/`：四张 Minecraft 地图的独立详情页面。
 - `assets/js/xcshop-project.js`：读取本站版本 JSON，展示版本列表、发布详情和下载入口。
 - `404.html`：GitHub Pages 的未命中路径处理，以及新版本下载页的动态入口。
 
@@ -27,6 +31,10 @@
 ```js
 { title: "作品名称", url: "https://项目链接" }
 ```
+
+Minecraft 地图也维护在同一文件的 `minecraft.projects` 中：`image` 对应 `assets/images/minecraft/` 下的图片，`summary` 用于列表介绍，`introduction`、`notes`、`gallery`、`downloads` 用于详情页。`downloads` 项包含 `label`、`url` 和可选的提取码 `code`；没有已核实的网盘地址时，页面显示爱发电原文获取入口。新增地图还需在 `projects/minecraft/<id>/index.html` 添加带有 `data-minecraft-project="<id>"` 的页面。
+
+Minecraft 页面沿用全站配色、侧栏和主题偏好。列表始终为左图右文布局；详情页支持键盘方向键切换预览图片、Escape 关闭，提取码复制失败时也可手动复制。浏览本站的作品信息不需要请求爱发电 API。
 
 ## 预览
 
